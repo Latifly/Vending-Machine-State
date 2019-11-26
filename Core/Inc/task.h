@@ -21,6 +21,15 @@
 #define led_proses_ON		HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET)
 #define led_proses_OFF		HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET)
 
+#define led_proses_ON		HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_RESET)
+#define led_proses_OFF		HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, GPIO_PIN_SET)
+
+#define led_kembali500_ON		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET)
+#define led_kembali500_OFF		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET)
+
+#define led_kembali1000_ON		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_5_Pin, GPIO_PIN_RESET)
+#define led_kembali1000_OFF		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_5_Pin, GPIO_PIN_SET)
+
 void task_init();
 void task_run();
 

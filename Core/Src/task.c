@@ -22,7 +22,7 @@ volatile uint8_t debounce1=0xFF;
 volatile uint8_t debounce2=0xFF;
 volatile uint8_t debounce3=0xFF;
 volatile uint8_t debounce4=0xFF;
-uint16_t delaytime;
+uint16_t delaytime,kembali=0;
 
 void task_init(){
 //	LCD_Init();
@@ -47,6 +47,7 @@ void task_run(){
 		break;
 	}
 
+
 	case delay:{
 		delaytime--;
 		if(delaytime==0){
@@ -54,6 +55,8 @@ void task_run(){
 			kondisi=next_kondisi;
 			led_koinOut_OFF;
 			led_minuman_OFF;
+			led_kembali1000_OFF;
+			led_kembali500_OFF;
 			LCD_Clear();
 		}
 		break;
@@ -113,14 +116,16 @@ void task_run(){
 		if(batal_ok()){
 			kondisi=buzzer;
 			delaytime=3;
+			kembali=500;
 			next_kondisi=transaksi_batal;
 		}
 
-//		if(Koin1000_masuk()){
-//			kondisi=buzzer;
-//			delaytime=3;
-//			next_kondisi=kembali500;
-//		}
+		if(Koin1000_masuk()){
+			kembali=500;
+			kondisi=buzzer;
+			delaytime=3;
+			next_kondisi=koin_kembali;
+		}
 
 		break;
 	}
@@ -136,6 +141,7 @@ void task_run(){
 		LCD_Print("Koin masuk = 1000");
 
 		led_proses_ON;
+		kembali=0;
 
 		if(proses_ok()){
 			led_proses_OFF;
@@ -148,14 +154,23 @@ void task_run(){
 			led_proses_OFF;
 			kondisi=buzzer;
 			delaytime=3;
+			kembali=1000;
 			next_kondisi=transaksi_batal;
 		}
 
-		if(Koin500_masuk()||Koin1000_masuk()){
+		if(Koin500_masuk()){
+			kembali=500;
 			kondisi=buzzer;
 			delaytime=3;
 			next_kondisi=koin_kembali;
 		}
+
+		if(Koin1000_masuk()){
+			kembali=1000;
+			kondisi=buzzer;
+			delaytime=3;
+			next_kondisi=koin_kembali;
+				}
 
 //		if(Koin1000_masuk()){
 //			kondisi=buzzer;
@@ -173,9 +188,17 @@ void task_run(){
 		LCD_Print("                    ");
 		LCD_SetCursor(2, 2);
 		LCD_Print("uang mencukupi");
-		LCD_SetCursor(4, 3);
+		LCD_SetCursor(0, 3);
 		LCD_Print("koin kembali  ");
+		LCD_SetCursor(14, 3);
+		LCD_PrintNum(kembali);
 
+		if(kembali==500){
+			led_kembali500_ON;
+		}
+		if(kembali==1000){
+			led_kembali1000_ON;
+		}
 		led_koinOut_ON;
 		kondisi=delay;
 		delaytime=500;
@@ -190,12 +213,20 @@ void task_run(){
 		LCD_Print("                    ");
 		LCD_SetCursor(2, 2);
 		LCD_Print("Transaksi Batal");
-		LCD_SetCursor(4, 3);
+		LCD_SetCursor(0, 3);
 		LCD_Print("uang kembali  ");
+		LCD_SetCursor(14, 3);
+		LCD_PrintNum(kembali);
 
+		if(kembali==500){
+			led_kembali500_ON;
+		}
+		if(kembali==1000){
+			led_kembali1000_ON;
+		}
 		led_koinOut_ON;
 		kondisi=delay;
-		delaytime=2000;
+		delaytime=500;
 		next_kondisi=start;
 		break;
 	}
@@ -225,11 +256,11 @@ unsigned char Koin500_masuk(void){
 	static unsigned char debounce=0xFF;
 	unsigned char detectedFLag=0;
 	if(HAL_GPIO_ReadPin(Koin_500_GPIO_Port,Koin_500_Pin)== GPIO_PIN_RESET){
-		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_RESET);
 		debounce=(debounce<<2);
 	} else {
 		debounce= (debounce<<2)|3;
-		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, GPIO_PIN_SET);
 	}
 	if (debounce==0x03) {
 		detectedFLag=1;
@@ -241,11 +272,11 @@ unsigned char Koin1000_masuk(void){
 	static unsigned char debounce=0xFF;
 	unsigned char detectedFLag=0;
 	if(HAL_GPIO_ReadPin(Koin_1000_GPIO_Port,Koin_1000_Pin)== GPIO_PIN_RESET){
-		HAL_GPIO_WritePin(LED_5_GPIO_Port, LED_5_Pin, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(LED_5_GPIO_Port, LED_5_Pin, GPIO_PIN_RESET);
 		debounce=(debounce<<2);
 	} else {
 		debounce= (debounce<<2)|3;
-		HAL_GPIO_WritePin(LED_5_GPIO_Port, LED_5_Pin, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(LED_5_GPIO_Port, LED_5_Pin, GPIO_PIN_SET);
 	}
 	if (debounce==0x03) {
 		detectedFLag=1;
